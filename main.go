@@ -1,12 +1,23 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"runtime"
 	"runtime/debug"
 )
 
 func main() {
+	var version bool
+	flag.BoolVar(&version, "v", false, "show version")
+	flag.Parse()
+
+	if version {
+		fmt.Printf("buildinfo-test: %s\n", Version())
+		return
+	}
+
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		log.Fatal("failed to read build info")
@@ -25,6 +36,15 @@ func main() {
 	for _, s := range info.Settings {
 		fmt.Printf("%-20s: %s\n", s.Key, s.Value)
 	}
+}
+
+func Version() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "unkown"
+	}
+
+	return fmt.Sprintf("%s %s/%s", info.Main.Version, runtime.GOOS, runtime.GOARCH)
 }
 
 func PrintModule(mod *debug.Module, indent string) {
