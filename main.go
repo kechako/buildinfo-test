@@ -50,6 +50,9 @@ func Version() string {
 		switch s.Key {
 		case "vcs.revision":
 			vcsRevision = s.Value
+			if len(vcsRevision) > 10 {
+				vcsRevision = vcsRevision[:10]
+			}
 		case "vcs.time":
 			vcsTime = s.Value
 		}
