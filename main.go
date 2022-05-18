@@ -44,7 +44,32 @@ func Version() string {
 		return "unkown"
 	}
 
-	return fmt.Sprintf("%s %s/%s", info.Main.Version, runtime.GOOS, runtime.GOARCH)
+	var vcsRevision string
+	var vcsTime string
+	for _, s := range info.Settings {
+		switch s.Key {
+		case "vcs.revision":
+			vcsRevision = s.Value
+		case "vcs.time":
+			vcsTime = s.Value
+		}
+	}
+
+	var revision string
+	if vcsRevision != "" {
+		if vcsTime != "" {
+			revision = fmt.Sprintf("%s revision %s", vcsTime, vcsRevision)
+		} else {
+			revision = fmt.Sprintf("revision %s", vcsRevision)
+		}
+	}
+
+	if revision == "" {
+
+		return fmt.Sprintf("%s [%s/%s]", info.Main.Version, runtime.GOOS, runtime.GOARCH)
+	} else {
+		return fmt.Sprintf("%s (%s) [%s/%s]", info.Main.Version, revision, runtime.GOOS, runtime.GOARCH)
+	}
 }
 
 func PrintModule(mod *debug.Module, indent string) {
